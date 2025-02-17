@@ -12,6 +12,8 @@ Vizit is an AI-driven data visualization pipeline that leverages [Orion](https:/
 - [Usage](#usage)
   - [Command Line Interface (CLI)](#command-line-interface-cli)
   - [Example Workflow](#example-workflow)
+- [Example Output](#example-output)
+- [Visualization Examples](#visualization-examples)
 - [Configuration](#configuration)
 - [Extending Vizit](#extending-vizit)
 - [Contributing](#contributing)
@@ -22,21 +24,28 @@ Vizit is an AI-driven data visualization pipeline that leverages [Orion](https:/
 ## Features
 
 - **Data Ingestion:**  
-  Load datasets in CSV, Excel, or JSON formats into a Pandas DataFrame.
+  Load datasets (CSV, Excel, JSON) into a Pandas DataFrame.
+  
 - **Automated Preprocessing:**  
   An Orion agent generates and executes Python code to clean or transform your data.
+
 - **Data Analysis:**  
-  A dedicated stage where an Orion agent generates code to compute summary statistics or other data analysis metrics. The results (e.g., new variables, computed statistics) are stored in a persistent execution context.
+  A dedicated stage where an Orion agent generates and executes code to compute summary statistics and derive additional metrics. All outputs are retained in a persistent execution context.
+
 - **Visualization Suggestion:**  
-  An Orion agent analyzes the current state of the data and provides textual recommendations for meaningful plots.
+  An Orion agent examines a summary of the analyzed data and returns textual recommendations for meaningful plots.
+
 - **Visualization Code Generation:**  
-  Another Orion agent generates Python code to create the suggested visualizations (using libraries such as Plotly or matplotlib) and executes the code to save the plots as image files.
+  A final Orion agent generates Python code to create the recommended visualizations (using Plotly, matplotlib, or seaborn) and executes the code to save the plots as PNG files.
+
 - **Persistent Execution Context:**  
-  A custom `CodeExecutor` maintains a persistent local namespace that retains all variables created or modified across different stages.
+  A custom `CodeExecutor` maintains a persistent namespace that carries over variables (including the DataFrame and any newly created summaries) between code executions.
+
 - **Retry Mechanism:**  
-  If generated code fails to execute, the agent is notified of the error and asked to regenerate its code.
+  If generated code errors out, the agent is notified with the error details and asked to regenerate its code.
+
 - **Modular & Object-Oriented:**  
-  The pipeline is organized into clear, independent stages (ingestion, preprocessing, data analysis, visualization suggestion, and visualization code generation) for ease of extension and maintenance.
+  Each pipeline stage is encapsulated in its own module for easy extension and maintenance.
 
 ---
 
@@ -45,28 +54,30 @@ Vizit is an AI-driven data visualization pipeline that leverages [Orion](https:/
 Vizit’s pipeline consists of the following stages:
 
 1. **Ingestion:**  
-   Reads a dataset from a specified file and loads it into a Pandas DataFrame.
+   Reads your dataset from a file and loads it into a DataFrame.
 
 2. **Preprocessing:**  
-   An Orion agent generates Python code to clean or transform the DataFrame. This code is executed using the persistent `CodeExecutor`.
+   An Orion agent receives a summary of the data and generates Python code to clean/transform it.  
+   Code is executed using the persistent `CodeExecutor`.
 
 3. **Data Analysis:**  
-   An additional Orion agent generates and executes code to perform further analysis on the data (for example, computing summary statistics or new derived metrics).  
-   All results are retained in the persistent context.
+   Another Orion agent generates code to compute summary statistics and other derived metrics.  
+   Results (new variables, insights, etc.) are stored persistently for later stages.
 
 4. **Visualization Suggestion:**  
-   Based on a summary of the analyzed data, another Orion agent returns textual suggestions for visualizations (e.g., "a histogram of ages" or "a scatter plot of score vs. age").
+   Based on the analyzed data summary, an Orion agent suggests 2–4 meaningful visualizations in text form.
 
 5. **Visualization Code Generation:**  
-   Finally, an Orion agent generates Python code to create the recommended plots and execute that code to save the visualizations as image files.
+   Finally, an Orion agent produces Python code that generates the visualizations and saves them as PNG files in a specified output folder.  
+   The persistent context is used so that any variables created earlier are available to this agent.
 
-*Note: Vizit does not use a generic AgentRunner; each stage creates its own agent and directly integrates code execution with retry logic via the persistent `CodeExecutor`.*
+*Note: Each stage creates its dedicated Orion agent and directly integrates with the persistent `CodeExecutor`. There is no global data store; instead, the `CodeExecutor` object is passed among stages.*
 
 ---
 
 ## Installation
 
-Vizit requires Python 3.8 or higher. To install Vizit, clone the repository and install the package in editable mode:
+Vizit requires Python 3.8 or higher. To install Vizit, clone the repository and install it in editable mode:
 
 ```bash
 git clone https://github.com/yourusername/vizit.git
@@ -82,46 +93,103 @@ Dependencies (including Orion, pandas, openai, plotly, etc.) are specified in th
 
 ### Command Line Interface (CLI)
 
-Vizit includes a simple CLI tool. To run the complete pipeline on your dataset, use:
+Vizit includes a simple CLI tool to run the complete pipeline. For example, to run the pipeline on your dataset:
 
 ```bash
-python cli.py --data /path/to/your/dataset.csv --output /path/to/output_directory
+python3 cli.py --data test.csv --output output
 ```
 
-- **--data:** Path to your dataset (supported formats: CSV, Excel, JSON).
-- **--output:** Directory where generated visualization files will be saved (Vizit will create this directory if it does not exist).
+- **--data:** Path to your dataset (CSV, Excel, or JSON).
+- **--output:** Directory where generated visualization files will be saved (Vizit will create this directory if it doesn’t exist).
 
 ### Example Workflow
 
 1. **Data Ingestion:**  
-   Vizit reads your dataset from the provided file and loads it into a DataFrame.
+   The pipeline reads your dataset (e.g., `test.csv` with 100 rows and 6 columns) and loads it into a DataFrame.
 
 2. **Preprocessing Stage:**  
-   The preprocessing agent receives a summary of the data and generates Python code to clean or transform it.  
-   The code is executed in a persistent context (via `CodeExecutor`), preserving any new variables or analysis results.
+   The preprocessing agent analyzes the initial summary of the DataFrame and generates code (e.g., to drop duplicates, trim whitespace, and ensure correct data types).  
+   The generated code is executed, and any errors are reported and retried.
 
 3. **Data Analysis Stage:**  
-   An analysis agent further processes the data to compute summary statistics or create derived metrics.  
-   These results are stored in the persistent context and can be used by later stages.
+   An analysis agent generates code to compute statistics such as descriptive stats, counts, group-wise averages, correlations, and other insights.  
+   The persistent context stores the results for future use.
 
 4. **Visualization Suggestion Stage:**  
-   Based on the updated data summary, the visualization suggestion agent provides textual recommendations for plots.
+   Based on the updated DataFrame summary, the visualization suggestion agent provides recommendations like:
+   - "Bar chart of City counts"
+   - "Box plot of Age distribution"
+   - "Scatter plot of Age vs. Score, colored by Gender"
+   - "Grouped bar chart comparing average Age and Score by Gender"
 
 5. **Visualization Code Generation Stage:**  
-   Finally, the visualization code agent generates Python code to create and save the recommended plots as PNG files in the specified output directory.
+   Finally, the visualization code agent generates and executes code that creates the plots and saves them as PNG files in the specified output folder.
 
-After running the pipeline, check your output directory to view the generated visualizations.
+---
+
+## Example Output
+
+Below is an example of what running the pipeline might look like on the command line (logged output):
+
+```plaintext
+(torch) (base) mrwhite0racle@White0racle:~/Desktop/SaumyaCourses/Vizit$ python3 cli.py --data test.csv --output output > test.log
+2025-02-17 18:26:53 [INFO] ... | Initial context summary: {
+    "DataFrame": "Shape: (100, 6)\nColumns: ['ID', 'Name', 'Age', 'Gender', 'City', 'Score']\nHead:\n  1 Person1   21   Male    New York   50.5\n  2 Person2   22 Female Los Angeles   51.0\n  3 Person3   23   Male     Chicago   51.5\n  4 Person4   24 Female     Houston   52.0\n  5 Person5   25   Male     Phoenix   52.5"
+}
+2025-02-17 18:26:53 [INFO] ... | [Stage: Preprocessing]
+...
+2025-02-17 18:27:14 [INFO] ... | DataFrame summary after preprocessing: {
+    "DataFrame": "Shape: (100, 6)\nColumns: ['ID', 'Name', 'Age', 'Gender', 'City', 'Score']\nHead:\n  1 Person1   21   Male    New York   50.5\n  2 Person2   22 Female Los Angeles   51.0\n  ...",
+    "col": "Type: <class 'str'>, Value: City"
+}
+2025-02-17 18:27:30 [INFO] ... | [Stage: Analysis]
+...
+2025-02-17 18:27:44 [INFO] ... | [Stage: Visualization Suggestion]
+...
+2025-02-17 18:28:10 [INFO] ... | [Stage: Visualization Code Generation]
+2025-02-17 18:28:11 [INFO] ... | [INFO] Pipeline complete. Final DataFrame shape: (100, 6)
+```
+
+All generated output files (e.g., PNG plots) are saved in the `output` directory.
+
+---
+
+## Visualization Examples
+
+After running the pipeline, you should see visualization files in your output folder. For example:
+
+### 1. Bar Chart of City Counts
+
+![City Counts](output/bar_chart_city_counts.png)
+
+### 2. Bar Chart of Average Score by City
+
+![Average Score by City](output/bar_chart_average_score_by_city.png)
+
+### 3. Box Plot of Age Distribution
+
+![Age Distribution](output/box_plot_age_distribution.png)
+
+### 4. Scatter Plot of Age vs. Score by Gender
+
+![Age vs Score](output/scatter_plot_age_score.png)
+
+### 5. Grouped Bar Chart of Gender Statistics
+
+![Gender Statistics](output/gender_stats_grouped_bar.png)
+
+*Note: The above images are samples. Your generated visualizations may vary based on your dataset and agent outputs.*
 
 ---
 
 ## Configuration
 
-Before running Vizit, ensure that you have set the following environment variables:
+Before running Vizit, set the following environment variables:
 
-- **OPENAI_API_KEY:** Your OpenAI API key for accessing language models.
-- **ORION_MODEL_NAME:** (Optional) Specifies the Orion model to use (default is `"gpt-4o"`).
+- **OPENAI_API_KEY:** Your OpenAI API key.
+- **ORION_MODEL_NAME:** (Optional) The Orion model to use (default is `"gpt-4o"`).
 
-You can set these in your terminal:
+For example:
 
 ```bash
 export OPENAI_API_KEY="sk-..."
@@ -132,28 +200,28 @@ export ORION_MODEL_NAME="gpt-4o"
 
 ## Extending Vizit
 
-Vizit is designed to be modular and extensible. Some ideas for extension include:
+Vizit is designed to be modular and extensible. Here are some ideas:
 
 - **Web Interface:**  
-  Build a Flask or FastAPI application to serve visualizations interactively.
-  
+  Build a Flask or FastAPI application to serve the pipeline results and display visualizations interactively.
+
 - **Additional Analysis:**  
-  Add more specialized data analysis agents to compute advanced statistics or machine learning metrics.
-  
+  Add specialized analysis agents to compute advanced metrics or machine learning insights.
+
 - **Custom Agents:**  
-  Modify or extend the Orion agents to handle domain-specific preprocessing or visualization tasks.
-  
-- **Improved Logging:**  
-  Integrate more granular logging or error monitoring for production environments.
+  Enhance the Orion agents to support domain-specific preprocessing or visualization techniques.
+
+- **Improved Logging & Error Handling:**  
+  Integrate with logging or monitoring tools for production environments.
 
 ---
 
 ## Contributing
 
-Contributions are welcome! If you have ideas for new features, bug fixes, or improvements, please submit a pull request or open an issue on the GitHub repository.
+Contributions are welcome! Please fork the repository, create a new branch for your feature or bug fix, and submit a pull request.
 
 1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/my-feature`).
+2. Create a new branch (`git checkout -b feature/your-feature`).
 3. Commit your changes.
 4. Push your branch and open a pull request.
 
@@ -167,8 +235,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments
 
-- This project leverages the Orion library by [AshishKumar4](https://github.com/AshishKumar4/Orion) for agent-based interactions.
-- Special thanks to the contributors of OpenAI’s language models and the Python data science ecosystem.
+- This project leverages the [Orion](https://github.com/AshishKumar4/Orion) library for agent-based interactions.
+- Thanks to the contributors of OpenAI’s language models and the Python data science ecosystem for making projects like Vizit possible.
 ```
 
-Feel free to adjust any sections as needed to best fit your project’s specifics.
+---
+
+This `README.md` provides a thorough explanation of the library, how to use it, real example log output, and visualization examples. Adjust the paths and images as needed for your repository and environment.
