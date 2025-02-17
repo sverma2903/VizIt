@@ -23,7 +23,7 @@ def summarize_dataframe(df: pd.DataFrame) -> str:
     ]
     return "\n".join(lines)
 
-def run_pipeline(data_path: str):
+def run_pipeline(data_path: str, output_path: str):
     """
     Orchestrates the entire pipeline:
       1) Ingest data into a DataFrame
@@ -36,7 +36,7 @@ def run_pipeline(data_path: str):
     executor = CodeExecutor(df)
 
     # Step 2: Preprocessing
-    df_summary = summarize_dataframe(executor.df)
+    df_summary = summarize_dataframe(executor.get_df())
     logger.info(f"Initial DataFrame summary: {df_summary}")
     prep_agent = create_preprocessing_agent(executor)
     prompt_preprocess = textwrap.dedent(f"""
@@ -52,7 +52,7 @@ def run_pipeline(data_path: str):
     logger.info("\n")
 
     # Step 3: Visualization Suggestion
-    df_summary_after = summarize_dataframe(executor.df)
+    df_summary_after = summarize_dataframe(executor.get_df())
     sugg_agent = create_viz_suggestion_agent()
     prompt_suggestions = textwrap.dedent(f"""
         The DataFrame now looks like this:
@@ -77,12 +77,15 @@ def run_pipeline(data_path: str):
         {suggestions_text}
 
         Please produce Python code that creates the recommended visualizations 
-        from 'df' and saves them as .png files. Then call 'execute_code_tool' to run it.
+        from 'df' and saves them as .png files in the output_path {output_path}
+        Then call 'execute_code_tool' to run it.
+        The output_path might not exist yet, so you may need to create it.
+        Make sure that the visualizations are really beautiful, meaningful, and insightful!
     """).strip()
     logger.info("[Stage: Visualization Code Generation]")
     for chunk in code_agent.do(prompt_viz_code, background=False):
         print(chunk, end="", flush=True)
     logger.info("\n")
 
-    logger.info("[INFO] Pipeline complete. Final DataFrame shape:", executor.df.shape)
-    # If you want to retrieve the final DF, you can do so via executor.df
+    logger.info(f"[INFO] Pipeline complete. Final DataFrame shape: {executor.get_df().shape}")
+    # If you want to retrieve the final DF, you can do so via executor.get_df()
