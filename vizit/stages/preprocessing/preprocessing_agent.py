@@ -12,9 +12,10 @@ def create_preprocessing_agent(code_executor: CodeExecutor) -> NormalAgent:
         role="assistant",
         description=textwrap.dedent("""
             You are the data preprocessing agent. 
-            You receive a summary of a DataFrame, and the first 5 rows of the dataframe itself in csv, and you are supposed to produce Python code to clean or transform it
+            You receive a summary of a DataFrame and some more information about it, and you are supposed to produce Python code to clean or transform it
             (e.g., handle missing values, outliers).
             You can cal the execute_code_tool method to run the code.
+            Your code should always only modify the 'df' variable and not create any new variables.
         """).strip(),
         model_name="o1",
         tools=[code_executor.execute_code_tool],

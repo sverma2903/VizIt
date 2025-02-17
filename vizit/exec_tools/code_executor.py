@@ -1,5 +1,20 @@
 import pandas as pd
 import traceback
+import json
+
+def summarize_dataframe(df: pd.DataFrame) -> str:
+    """
+    Returns a short textual summary of the DataFrame for use in LLM prompts.
+    """
+    lines = [
+        f"Shape: {df.shape}",
+        f"Columns: {list(df.columns)}",
+        f"Info: {df.info()}",
+        "Head:",
+        df.head(5).to_string(index=False)
+    ]
+    return "\n".join(lines)
+
 class CodeExecutor:
     """
     A helper class that holds a persistent local context (a dictionary) in which the
@@ -15,6 +30,22 @@ class CodeExecutor:
         Returns the DataFrame stored in the context.
         """
         return self.context.get("df")
+    
+    def get_context_summary(self) -> str:
+        """
+        Returns a summary of the variables in the context.
+        """
+        df_summary = summarize_dataframe(self.get_df())
+        other_vars = [name for name in self.context if name != "df"]
+        summaries = {"DataFrame": df_summary}
+        for name in other_vars:
+            value = self.context[name]
+            summaries[name] = f"Type: {type(value)}, Value: {value}"
+            
+        # Serialize the summaries to JSON with indentation for readability.
+        dump = json.dumps(summaries, indent=4)
+        print(dump)
+        return dump
 
     def execute_code_tool(self, code: str) -> str:
         """
