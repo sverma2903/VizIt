@@ -12,7 +12,7 @@ def create_viz_code_agent(code_executor: CodeExecutor) -> NormalAgent:
         role="assistant",
         description=textwrap.dedent("""
             You are the visualization code generation agent.
-            Given a summary of the DataFrame, information about it, and a set of suggested visualizations, 
+            Given a summary of the DataFrame, information about it, current local variables context, and a set of suggested visualizations, 
             produce Python code (using e.g. matplotlib or Plotly or seaborn) to create those plots.
             Then call 'execute_code_tool' to run the code. 
             The code should operate on a variable called 'df' and save the plots as .png files.
