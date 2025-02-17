@@ -1,0 +1,101 @@
+ID,Name,Age,Gender,City,Score
+1,Person1,21,Male,New York,50.5
+2,Person2,22,Female,Los Angeles,51.0
+3,Person3,23,Male,Chicago,51.5
+4,Person4,24,Female,Houston,52.0
+5,Person5,25,Male,Phoenix,52.5
+6,Person6,26,Female,New York,53.0
+7,Person7,27,Male,Los Angeles,53.5
+8,Person8,28,Female,Chicago,54.0
+9,Person9,29,Male,Houston,54.5
+10,Person10,30,Female,Phoenix,55.0
+11,Person11,31,Male,New York,55.5
+12,Person12,32,Female,Los Angeles,56.0
+13,Person13,33,Male,Chicago,56.5
+14,Person14,34,Female,Houston,57.0
+15,Person15,35,Male,Phoenix,57.5
+16,Person16,36,Female,New York,58.0
+17,Person17,37,Male,Los Angeles,58.5
+18,Person18,38,Female,Chicago,59.0
+19,Person19,39,Male,Houston,59.5
+20,Person20,40,Female,Phoenix,60.0
+21,Person21,41,Male,New York,60.5
+22,Person22,42,Female,Los Angeles,61.0
+23,Person23,43,Male,Chicago,61.5
+24,Person24,44,Female,Houston,62.0
+25,Person25,45,Male,Phoenix,62.5
+26,Person26,46,Female,New York,63.0
+27,Person27,47,Male,Los Angeles,63.5
+28,Person28,48,Female,Chicago,64.0
+29,Person29,49,Male,Houston,64.5
+30,Person30,50,Female,Phoenix,65.0
+31,Person31,51,Male,New York,65.5
+32,Person32,52,Female,Los Angeles,66.0
+33,Person33,53,Male,Chicago,66.5
+34,Person34,54,Female,Houston,67.0
+35,Person35,55,Male,Phoenix,67.5
+36,Person36,56,Female,New York,68.0
+37,Person37,57,Male,Los Angeles,68.5
+38,Person38,58,Female,Chicago,69.0
+39,Person39,59,Male,Houston,69.5
+40,Person40,60,Female,Phoenix,70.0
+41,Person41,21,Male,New York,70.5
+42,Person42,22,Female,Los Angeles,71.0
+43,Person43,23,Male,Chicago,71.5
+44,Person44,24,Female,Houston,72.0
+45,Person45,25,Male,Phoenix,72.5
+46,Person46,26,Female,New York,73.0
+47,Person47,27,Male,Los Angeles,73.5
+48,Person48,28,Female,Chicago,74.0
+49,Person49,29,Male,Houston,74.5
+50,Person50,30,Female,Phoenix,75.0
+51,Person51,31,Male,New York,50.5
+52,Person52,32,Female,Los Angeles,51.0
+53,Person53,33,Male,Chicago,51.5
+54,Person54,34,Female,Houston,52.0
+55,Person55,35,Male,Phoenix,52.5
+56,Person56,36,Female,New York,53.0
+57,Person57,37,Male,Los Angeles,53.5
+58,Person58,38,Female,Chicago,54.0
+59,Person59,39,Male,Houston,54.5
+60,Person60,40,Female,Phoenix,55.0
+61,Person61,41,Male,New York,55.5
+62,Person62,42,Female,Los Angeles,56.0
+63,Person63,43,Male,Chicago,56.5
+64,Person64,44,Female,Houston,57.0
+65,Person65,45,Male,Phoenix,57.5
+66,Person66,46,Female,New York,58.0
+67,Person67,47,Male,Los Angeles,58.5
+68,Person68,48,Female,Chicago,59.0
+69,Person69,49,Male,Houston,59.5
+70,Person70,50,Female,Phoenix,60.0
+71,Person71,51,Male,New York,60.5
+72,Person72,52,Female,Los Angeles,61.0
+73,Person73,53,Male,Chicago,61.5
+74,Person74,54,Female,Houston,62.0
+75,Person75,55,Male,Phoenix,62.5
+76,Person76,56,Female,New York,63.0
+77,Person77,57,Male,Los Angeles,63.5
+78,Person78,58,Female,Chicago,64.0
+79,Person79,59,Male,Houston,64.5
+80,Person80,60,Female,Phoenix,65.0
+81,Person81,21,Male,New York,65.5
+82,Person82,22,Female,Los Angeles,66.0
+83,Person83,23,Male,Chicago,66.5
+84,Person84,24,Female,Houston,67.0
+85,Person85,25,Male,Phoenix,67.5
+86,Person86,26,Female,New York,68.0
+87,Person87,27,Male,Los Angeles,68.5
+88,Person88,28,Female,Chicago,69.0
+89,Person89,29,Male,Houston,69.5
+90,Person90,30,Female,Phoenix,70.0
+91,Person91,31,Male,New York,70.5
+92,Person92,32,Female,Los Angeles,71.0
+93,Person93,33,Male,Chicago,71.5
+94,Person94,34,Female,Houston,72.0
+95,Person95,35,Male,Phoenix,72.5
+96,Person96,36,Female,New York,73.0
+97,Person97,37,Male,Los Angeles,73.5
+98,Person98,38,Female,Chicago,74.0
+99,Person99,39,Male,Houston,74.5
+100,Person100,40,Female,Phoenix,75.0
